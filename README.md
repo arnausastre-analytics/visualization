@@ -1,5 +1,6 @@
-# Visualization
 
-Visualizaciones avanzadas de datos y dashboards interactivos para facilitar el análisis y la toma de decisiones.
+# Dashboard de Ventas con Dash
 
-📂 Cada proyecto incluirá sus propios detalles técnicos en carpetas independientes.
+Dashboard interactivo para visualizar ventas por producto y categoría.
+
+[![Launch Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/arnausastre-analytics/visualization/HEAD?urlpath=proxy/8050/)
