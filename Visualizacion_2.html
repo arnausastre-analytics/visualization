@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mapa de Operaciones y Logística</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    .info-panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="info-panel">
+    <h3>Mapa de Operaciones</h3>
+    <p>Pedidos, rutas y zonas activas</p>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    // Inicializar mapa centrado
+    const mapa = L.map('map').setView([40.4168, -3.7038], 6); // Madrid por defecto
+
+    // Cargar mapa base (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(mapa);
+
+    // Datos simulados de pedidos (marcadores)
+    const pedidos = [
+      { ciudad: 'Madrid', coords: [40.4168, -3.7038] },
+      { ciudad: 'Barcelona', coords: [41.3851, 2.1734] },
+      { ciudad: 'Valencia', coords: [39.4699, -0.3763] },
+      { ciudad: 'Sevilla', coords: [37.3891, -5.9845] }
+    ];
+
+    pedidos.forEach(p => {
+      L.marker(p.coords).addTo(mapa)
+        .bindPopup(`<strong>Pedido en ${p.ciudad}</strong><br>Estado: En ruta`);
+    });
+
+    // Ruta simulada (línea conectando puntos)
+    const ruta = [
+      [40.4168, -3.7038], // Madrid
+      [39.4699, -0.3763], // Valencia
+      [41.3851, 2.1734]   // Barcelona
+    ];
+
+    const polyline = L.polyline(ruta, { color: 'blue' }).addTo(mapa);
+    mapa.fitBounds(polyline.getBounds());
+
+    // Zona caliente simulada (círculo de alta densidad de ventas)
+    const zonaCaliente = L.circle([37.3891, -5.9845], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.4,
+      radius: 30000 // en metros
+    }).addTo(mapa).bindPopup("Zona caliente de ventas: Sevilla");
+
+  </script>
+
+</body>
+</html>
