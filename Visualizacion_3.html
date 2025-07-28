@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Red de Clientes y Productos</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+  <link href="https://unpkg.com/vis-network@9.1.2/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f9fafb;
+    }
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    #network {
+      width: 100%;
+      height: 90vh;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>Visualización de Red: Clientes y Productos</h2>
+    <p>Explora relaciones entre usuarios y los productos que compran</p>
+  </header>
+
+  <div id="network"></div>
+
+  <script>
+    // Definimos nodos
+    const nodes = new vis.DataSet([
+      { id: 1, label: "Cliente: Ana", group: "cliente" },
+      { id: 2, label: "Cliente: Luis", group: "cliente" },
+      { id: 3, label: "Cliente: Marta", group: "cliente" },
+      { id: 4, label: "Producto: A", group: "producto" },
+      { id: 5, label: "Producto: B", group: "producto" },
+      { id: 6, label: "Producto: C", group: "producto" },
+    ]);
+
+    // Definimos relaciones (edges)
+    const edges = new vis.DataSet([
+      { from: 1, to: 4 },
+      { from: 1, to: 5 },
+      { from: 2, to: 5 },
+      { from: 2, to: 6 },
+      { from: 3, to: 4 },
+      { from: 3, to: 6 }
+    ]);
+
+    // Creamos el grafo
+    const container = document.getElementById("network");
+
+    const data = {
+      nodes: nodes,
+      edges: edges,
+    };
+
+    const options = {
+      nodes: {
+        shape: "dot",
+        size: 20,
+        font: { size: 14 }
+      },
+      groups: {
+        cliente: {
+          color: { background: "#3b82f6", border: "#2563eb" },
+        },
+        producto: {
+          color: { background: "#10b981", border: "#059669" },
+        }
+      },
+      edges: {
+        arrows: "to",
+        color: "#999"
+      },
+      physics: {
+        enabled: true,
+        barnesHut: {
+          gravitationalConstant: -8000,
+          centralGravity: 0.3,
+          springLength: 95
+        }
+      },
+      interaction: {
+        hover: true,
+        dragNodes: true,
+        zoomView: true
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+  </script>
+
+</body>
+</html>
