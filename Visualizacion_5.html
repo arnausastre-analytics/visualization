@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Series Temporales Avanzadas</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    #grafico {
+      width: 100%;
+      height: 600px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Visualización Avanzada de Series Temporales</h1>
+    <p>Con múltiples variables, zoom interactivo y detección visual de anomalías</p>
+  </header>
+
+  <section>
+    <div id="grafico"></div>
+  </section>
+
+  <script>
+    // Datos simulados: 12 meses, ventas y costes
+    const meses = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+    
+    const ventas = [100, 120, 150, 130, 170, 180, 200, 210, 220, 250, 300, 280];
+    const costes = [80, 95, 110, 100, 120, 130, 140, 160, 155, 180, 190, 200];
+
+    // Calcular media móvil (suavizado)
+    function mediaMovil(data, ventana = 3) {
+      return data.map((_, i, arr) => {
+        if (i < ventana - 1) return null;
+        const sub = arr.slice(i - ventana + 1, i + 1);
+        return sub.reduce((a, b) => a + b, 0) / ventana;
+      });
+    }
+
+    // Simulación de anomalías (resaltarlas en rojo si el valor supera umbral)
+    const anomalías = ventas.map(v => v > 240 ? v : null);
+
+    const traceVentas = {
+      x: meses,
+      y: ventas,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Ventas',
+      line: { color: 'steelblue' }
+    };
+
+    const traceCostes = {
+      x: meses,
+      y: costes,
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: 'Costes',
+      yaxis: 'y2',
+      line: { color: 'indianred' }
+    };
+
+    const traceMedia = {
+      x: meses,
+      y: mediaMovil(ventas),
+      type: 'scatter',
+      mode: 'lines',
+      name: 'Tendencia (media móvil)',
+      line: { dash: 'dot', color: 'gray' }
+    };
+
+    const traceAnomalias = {
+      x: meses,
+      y: anomalías,
+      type: 'scatter',
+      mode: 'markers',
+      name: 'Anomalías',
+      marker: { size: 10, color: 'red', symbol: 'cross' },
+      showlegend: true
+    };
+
+    const layout = {
+      title: 'Ventas y Costes 2024',
+      xaxis: {
+        title: 'Mes',
+        rangeslider: { visible: true },
+        showgrid: false
+      },
+      yaxis: {
+        title: 'Ventas ($)',
+        showline: true
+      },
+      yaxis2: {
+        title: 'Costes ($)',
+        overlaying: 'y',
+        side: 'right'
+      },
+      legend: {
+        x: 0.05,
+        y: 1.1,
+        orientation: 'h'
+      },
+      margin: { t: 50, b: 50 },
+      hovermode: 'x unified'
+    };
+
+    Plotly.newPlot('grafico', [traceVentas, traceCostes, traceMedia, traceAnomalias], layout);
+  </script>
+
+</body>
+</html>
