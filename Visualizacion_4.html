@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Storytelling de Ventas 2024</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f9fafb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    section {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #1f2937;
+    }
+    .filtros {
+      margin: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .filtros label, .filtros select {
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    #grafico {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Storytelling Interactivo de Ventas</h1>
+    <p>Explora las tendencias clave de forma visual y controlada</p>
+  </header>
+
+  <section>
+    <h2>📌 Introducción</h2>
+    <p>
+      Este informe interactivo presenta la evolución de las ventas por producto en 2024. Usa los filtros para cambiar la vista y observar tendencias clave.
+    </p>
+
+    <div class="filtros">
+      <label for="filtroProducto">Producto:</label>
+      <select id="filtroProducto" onchange="actualizarGrafico()">
+        <option value="todos">Todos</option>
+        <option value="A">Producto A</option>
+        <option value="B">Producto B</option>
+        <option value="C">Producto C</option>
+      </select>
+    </div>
+
+    <div id="grafico"></div>
+
+    <h2>📈 Análisis</h2>
+    <p>
+      Podemos observar que los productos A y C muestran una tendencia creciente, especialmente en el segundo trimestre. El producto B se mantiene más estable, con ligeros descensos en mayo y junio.
+    </p>
+
+    <h2>🧠 Conclusión</h2>
+    <p>
+      Esta visualización permite identificar oportunidades de mejora y resalta el valor de integrar datos con herramientas visuales. Ideal para reportes ejecutivos o presentaciones comerciales.
+    </p>
+  </section>
+
+  <script>
+    const datosOriginales = [
+      { mes: 'Enero', A: 100, B: 80, C: 120 },
+      { mes: 'Febrero', A: 130, B: 75, C: 140 },
+      { mes: 'Marzo', A: 160, B: 70, C: 160 },
+      { mes: 'Abril', A: 170, B: 85, C: 180 },
+      { mes: 'Mayo', A: 190, B: 80, C: 200 },
+      { mes: 'Junio', A: 210, B: 78, C: 220 }
+    ];
+
+    function actualizarGrafico() {
+      const filtro = document.getElementById('filtroProducto').value;
+
+      const meses = datosOriginales.map(d => d.mes);
+      let traces = [];
+
+      if (filtro === 'todos') {
+        ['A', 'B', 'C'].forEach(prod => {
+          traces.push({
+            x: meses,
+            y: datosOriginales.map(d => d[prod]),
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: `Producto ${prod}`
+          });
+        });
+      } else {
+        traces.push({
+          x: meses,
+          y: datosOriginales.map(d => d[filtro]),
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: `Producto ${filtro}`,
+          line: { color: 'steelblue' }
+        });
+      }
+
+      Plotly.newPlot('grafico', traces, {
+        title: 'Ventas mensuales por producto',
+        xaxis: { title: 'Mes' },
+        yaxis: { title: 'Ventas ($)' },
+        margin: { t: 40 }
+      });
+    }
+
+    actualizarGrafico();
+  </script>
+
+</body>
+</html>
