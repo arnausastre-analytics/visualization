@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard de Ventas Interactivo</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #333;
+    }
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 20px 30px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    header p {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #d1d5db;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .kpis {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .kpi {
+      flex: 1;
+      min-width: 200px;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .kpi h2 {
+      margin: 0;
+      font-size: 26px;
+      color: #1f2937;
+    }
+    .kpi p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .filtros {
+      margin: 30px 0;
+      text-align: center;
+    }
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    canvas {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      margin: 40px 0 10px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Dashboard Interactivo de Ventas</h1>
+    <p>Visualización en tiempo real con métricas clave por producto</p>
+  </header>
+
+  <div class="container">
+
+    <div class="kpis">
+      <div class="kpi">
+        <h2 id="totalVentas">0</h2>
+        <p>Total Ventas</p>
+      </div>
+      <div class="kpi">
+        <h2 id="promedio">0</h2>
+        <p>Promedio por Mes</p>
+      </div>
+      <div class="kpi">
+        <h2 id="transacciones">0</h2>
+        <p>Transacciones</p>
+      </div>
+    </div>
+
+    <div class="filtros">
+      <label for="filtroProducto"><strong>Filtrar por producto:</strong></label>
+      <select id="filtroProducto" onchange="actualizarDashboard()">
+        <option value="todos">Todos</option>
+      </select>
+    </div>
+
+    <canvas id="grafico" width="800" height="400"></canvas>
+
+  </div>
+
+  <footer>
+    © 2025 - Dashboard de ejemplo para portafolio profesional
+  </footer>
+
+  <script>
+    const datos = [
+      { mes: 'Enero', producto: 'A', ventas: 120 },
+      { mes: 'Febrero', producto: 'A', ventas: 90 },
+      { mes: 'Marzo', producto: 'A', ventas: 140 },
+      { mes: 'Enero', producto: 'B', ventas: 80 },
+      { mes: 'Febrero', producto: 'B', ventas: 60 },
+      { mes: 'Marzo', producto: 'B', ventas: 100 },
+      { mes: 'Enero', producto: 'C', ventas: 150 },
+      { mes: 'Febrero', producto: 'C', ventas: 130 },
+      { mes: 'Marzo', producto: 'C', ventas: 160 }
+    ];
+
+    const ctx = document.getElementById('grafico').getContext('2d');
+    let chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Ventas',
+          data: [],
+          backgroundColor: '#3b82f6'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Ventas ($)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Mes'
+            }
+          }
+        }
+      }
+    });
+
+    function actualizarDashboard() {
+      const filtro = document.getElementById('filtroProducto').value;
+      const datosFiltrados = filtro === 'todos' ? datos : datos.filter(d => d.producto === filtro);
+
+      const total = datosFiltrados.reduce((suma, d) => suma + d.ventas, 0);
+      const promedio = (total / datosFiltrados.length).toFixed(1);
+      const transacciones = datosFiltrados.length;
+
+      document.getElementById('totalVentas').textContent = `$${total}`;
+      document.getElementById('promedio').textContent = `$${promedio}`;
+      document.getElementById('transacciones').textContent = transacciones;
+
+      const agrupado = {};
+      datosFiltrados.forEach(d => {
+        agrupado[d.mes] = (agrupado[d.mes] || 0) + d.ventas;
+      });
+
+      chart.data.labels = Object.keys(agrupado);
+      chart.data.datasets[0].data = Object.values(agrupado);
+      chart.update();
+    }
+
+    function cargarOpcionesFiltro() {
+      const productos = [...new Set(datos.map(d => d.producto))];
+      const select = document.getElementById('filtroProducto');
+      productos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        select.appendChild(opt);
+      });
+    }
+
+    cargarOpcionesFiltro();
+    actualizarDashboard();
+  </script>
+
+</body>
+</html>
+
